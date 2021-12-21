@@ -1,26 +1,12 @@
-pipeline {
-  environment {
-    registry = "https://registry.hub.docker.com/vnark01/nodeapplication"
-    registryCredential = 'dockerhub'
-    dockerImage = ''
-  }
-  agent any
-  stages {
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build registry + ":$BUILD_NUMBER"
-        }
-      }
+node {
+
+    checkout scm
+
+    docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
+
+        def customImage = docker.build("vnark01/dockerwebapp1")
+
+        /* Push the container to the custom Registry */
+        customImage.push()
     }
-    stage('Deploy Image') {
-      steps{
-         script {
-            docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-          }
-        }
-      }
-    }
-  }
 }
